@@ -30,7 +30,7 @@
             font-family: Arial, sans-serif; /* 字体 */
             font-size: 16px; /* 字体大小 */
             color: #333; /* 文字颜色 */
-            width: 300px; /* 宽度 */
+            width: 600px; /* 宽度 */
             height: 100px; /* 高度 */
             overflow: auto; /* 如果内容超出容器，显示滚动条 */
             margin: 10px; /* 外边距 */
@@ -39,38 +39,24 @@
         }
 
     </style>
-    <button id="getTopologyButton">获取拓扑</button>
-    <button id="flowStatisticsButton">流量统计</button>
-    <button id="flowAnalysisButton">流量分析</button>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Heavy Hitter Detection</title>
-    <script>
-        fetch('/api/topology')
-            .then(response => response.json())
-            .then(topology => {
-                // 现在，topology对象包含了网络拓扑的数据
-                // 你可以用它来显示网络拓扑
-                console.log(topology);
-            });
-        // 选中按钮元素
-var button = document.getElementById('getTopologyButton');
-
-// 为按钮添加点击事件处理器
-button.addEventListener('click', function() {
-    // 使用fetch API来发送GET请求
-    fetch('/api/topology')
-        .then(response => response.json())
-        .then(topology => {
-            // 这里，topology对象包含了网络拓扑的数据
-            // 你可以用它来显示网络拓扑
-            console.log(topology);
-        });
-});
-    </script>
+    
 </head>
 <body>
+    <div style="display: flex; justify-content: center; align-items: center;">
+    <button id="createTopologyButton">创建拓扑</button>
+    <button id="getTopologyButton">获取拓扑</button>
+    <button id="flowStatisticsButton">流量统计</button>
+    <input type="number" id="kInput" placeholder="输入k值">
+
+    <button id="flowAnalysisButton">流量分析</button>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center;">
     <div id="outputBox">输出框</div>
+   </div>
 
     <h1>Heavy Hitter Detection Alerts</h1>
     <ul>
@@ -78,5 +64,76 @@ button.addEventListener('click', function() {
         <li>{{ alert }}</li>
         {% endfor %}
     </ul>
+
+	<script>
+
+
+
+        var createTopologyButton = document.getElementById('createTopologyButton');
+
+        // 为按钮添加点击事件处理器
+        createTopologyButton.addEventListener('click', function() {
+          // 使用fetch API来发送POST请求
+          fetch('/api/create-topology', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  file: '../topo2.py',
+                  controller: {
+                      ip: '127.0.0.1',
+                      port: 6633
+                  }
+              })
+          })
+          .then(response => {
+              if (response.ok) {
+                  console.log('拓扑创建成功');
+              } else {
+                  console.log('拓扑创建失败');
+              }
+          });
+        });
+
+        var Topobutton = document.getElementById('getTopologyButton');
+		// 为按钮添加点击事件处理器
+		Topobutton.addEventListener('click', function() {
+		    // 使用fetch API来发送GET请求
+		    fetch('/api/topology')
+		        .then(response => response.json())
+		        .then(topology => {
+		            // 这里，topology对象包含了网络拓扑的数据
+		            // 你可以用它来显示网络拓扑
+		            console.log(topology);
+		        });
+		});
+
+		var flowButton = document.getElementById('flowStatisticsButton');
+		flowButton.addEventListener('click', function() {
+		    fetch('/api/countmin')
+		        .then(response => response.json())
+		        .then(data => {
+		            // 这里，data对象包含了从后端返回的数据
+
+		            // 你可以用它来进行展示或其他操作
+		            console.log(data);
+		        });
+
+		});
+
+		var flowAnalysisButton = document.getElementById('flowAnalysisButton');
+        flowAnalysisButton.addEventListener('click', function() {
+            var k = document.getElementById('kInput').value;  // 获取输入框中的k值
+            fetch('/api/topk?k=' + k)  // 将k值作为查询参数传递给后端
+                .then(response => response.json())
+                .then(data => {
+                    // 这里，data对象包含了从后端返回的Top-k流量分析结果
+
+                    // 你可以用它来进行展示或其他操作
+                    console.log(data);
+                });
+        });
+	</script>
 </body>
 </html>

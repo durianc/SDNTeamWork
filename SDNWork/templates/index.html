@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        /* 设置按钮的样式 */
+        button {
+            background-color: #4CAF50; /* 背景颜色 */
+            border: none; /* 无边框 */
+            color: white; /* 文字颜色 */
+            padding: 15px 32px; /* 内边距 */
+            text-align: center; /* 文字居中 */
+            text-decoration: none; /* 无下划线 */
+            display: inline-block; /* 行内块级元素 */
+            font-size: 16px; /* 字体大小 */
+            margin: 4px 2px; /* 外边距 */
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            border-radius: 12px; /* 圆角 */
+            justify-content: center; /* 水平居中 */
+        }
+
+        /* 设置按钮悬停时的样式 */
+        button:hover {
+            background-color: #45a049;
+        }
+         #outputBox {
+            display: flex; /* 使用flex布局 */
+            background-color: #f2f2f2; /* 背景颜色 */
+            border: 1px solid #ccc; /* 边框 */
+            padding: 10px; /* 内边距 */
+            font-family: Arial, sans-serif; /* 字体 */
+            font-size: 16px; /* 字体大小 */
+            color: #333; /* 文字颜色 */
+            width: 300px; /* 宽度 */
+            height: 100px; /* 高度 */
+            overflow: auto; /* 如果内容超出容器，显示滚动条 */
+            margin: 10px; /* 外边距 */
+            justify-content: center; /* 水平居中 */
+            height: 100vh; /* 高度为视口高度 */
+        }
+
+    </style>
+    <button id="getTopologyButton">获取拓扑</button>
+    <button id="flowStatisticsButton">流量统计</button>
+    <button id="flowAnalysisButton">流量分析</button>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heavy Hitter Detection</title>
+    <script>
+        fetch('/api/topology')
+            .then(response => response.json())
+            .then(topology => {
+                // 现在，topology对象包含了网络拓扑的数据
+                // 你可以用它来显示网络拓扑
+                console.log(topology);
+            });
+        // 选中按钮元素
+var button = document.getElementById('getTopologyButton');
+
+// 为按钮添加点击事件处理器
+button.addEventListener('click', function() {
+    // 使用fetch API来发送GET请求
+    fetch('/api/topology')
+        .then(response => response.json())
+        .then(topology => {
+            // 这里，topology对象包含了网络拓扑的数据
+            // 你可以用它来显示网络拓扑
+            console.log(topology);
+        });
+});
+    </script>
+</head>
+<body>
+    <div id="outputBox">输出框</div>
+
+    <h1>Heavy Hitter Detection Alerts</h1>
+    <ul>
+        {% for alert in alert_info %}
+        <li>{{ alert }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
